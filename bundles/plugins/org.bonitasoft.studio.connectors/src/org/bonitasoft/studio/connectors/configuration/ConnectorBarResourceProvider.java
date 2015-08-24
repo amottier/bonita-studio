@@ -79,7 +79,10 @@ public class ConnectorBarResourceProvider implements BARResourcesProvider {
             final String connectorImplementationFilename = NamingUtils.toConnectorImplementationFilename(
                     association.getImplementationId(),
                     association.getImplementationVersion(), true);
-            final EMFFileStore implementationFileStore = implStore.getChild(connectorImplementationFilename);
+            final String implId = association.getImplementationId();
+            final String implVersion = association.getImplementationVersion();
+
+            final EMFFileStore implementationFileStore = (EMFFileStore) implStore.getImplementationFileStore(implId, implVersion);
             if (implementationFileStore == null) {
                 throw new FileNotFoundException(String.format("%s (%s) not found in repository", association.getImplementationId(),
                         association.getImplementationVersion()));
