@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.bonitasoft.engine.bpm.bar.BarResource;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.studio.common.FragmentTypes;
@@ -56,8 +58,9 @@ import com.google.common.base.Predicate;
  */
 public class ConnectorBarResourceProvider implements BARResourcesProvider {
 
-    private final RepositoryAccessor repositoryAccessor;
+    protected final RepositoryAccessor repositoryAccessor;
 
+    @Inject
     public ConnectorBarResourceProvider(final RepositoryAccessor repositoryAccessor) {
         this.repositoryAccessor = repositoryAccessor;
     }
