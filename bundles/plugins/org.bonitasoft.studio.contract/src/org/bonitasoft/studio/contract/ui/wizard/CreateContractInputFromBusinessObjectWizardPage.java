@@ -386,6 +386,7 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
                     if (mapping.isGenerated()) {
                         checkMandatoryAttributes(checkedElements, mappingChildren);
                     }
+
                 }
 
             }
