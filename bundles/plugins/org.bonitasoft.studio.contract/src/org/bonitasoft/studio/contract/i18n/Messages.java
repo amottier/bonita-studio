@@ -108,4 +108,6 @@ public class Messages extends NLS {
     public static String selectAll;
     public static String deselectAll;
     public static String preview;
+    public static String selectMandatories;
+    public static String mandatoryFieldsNotSelectedWarning;
 }

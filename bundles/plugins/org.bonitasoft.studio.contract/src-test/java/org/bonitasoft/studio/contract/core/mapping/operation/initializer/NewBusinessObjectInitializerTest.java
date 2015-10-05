@@ -29,7 +29,6 @@ import org.bonitasoft.studio.model.process.ContractInputType;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 public class NewBusinessObjectInitializerTest {
 
     @Rule
