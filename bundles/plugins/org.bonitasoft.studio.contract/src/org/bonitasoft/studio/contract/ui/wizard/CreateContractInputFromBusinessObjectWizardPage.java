@@ -343,6 +343,7 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
                 if (checkedElements.contains(mapping) && mapping.isGenerated()) {
                     validateMandatoryFieldsNotSelected(sb, mapping.getChildren(), checkedElements);
                 }
+
             }
         }
     }
