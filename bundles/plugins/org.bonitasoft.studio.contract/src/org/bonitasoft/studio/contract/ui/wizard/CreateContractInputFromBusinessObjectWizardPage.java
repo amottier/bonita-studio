@@ -368,15 +368,17 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
 
             protected void checkMandatoryAttributes(final IObservableSet checkedElements, final List<FieldToContractInputMapping> mappings) {
                 for (final FieldToContractInputMapping mapping : mappings) {
+                    List<FieldToContractInputMapping> mappingChildren = mapping.getChildren();
                     if (!mapping.getField().isNullable() && !mapping.isGenerated()) {
                         checkedElements.add(mapping);
-                        checkAllMappings(checkedElements, mapping.getChildren());
-                        generateAllMappings(mapping.getChildren(), true);
-                        if (mapping.getParent() != null && !checkedElements.contains(mapping.getParent())) {
-                            checkedElements.add(mapping.getParent());
+                        checkAllMappings(checkedElements, mappingChildren);
+                        generateAllMappings(mappingChildren, true);
+                        FieldToContractInputMapping mappingParent = mapping.getParent();
+                        if (mappingParent != null && !checkedElements.contains(mappingParent)) {
+                            checkedElements.add(mappingParent);
                         }
                     }
-                    checkMandatoryAttributes(checkedElements, mapping.getChildren());
+                    checkMandatoryAttributes(checkedElements, mappingChildren);
                 }
 
             }
