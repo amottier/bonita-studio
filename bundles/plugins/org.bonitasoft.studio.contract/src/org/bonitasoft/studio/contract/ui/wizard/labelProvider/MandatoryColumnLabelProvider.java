@@ -30,7 +30,7 @@ public class MandatoryColumnLabelProvider extends ColumnLabelProvider {
     public String getText(final Object element) {
         if (element instanceof FieldToContractInputMapping) {
             final FieldToContractInputMapping mapping = (FieldToContractInputMapping) element;
-            return new Boolean(!mapping.getField().isNullable()).toString();
+            return Boolean.valueOf(!mapping.getField().isNullable()).toString();
         }
         return super.getText(element);
     }
