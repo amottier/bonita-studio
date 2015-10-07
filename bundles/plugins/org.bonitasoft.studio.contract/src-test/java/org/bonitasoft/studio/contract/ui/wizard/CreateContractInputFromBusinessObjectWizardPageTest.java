@@ -167,8 +167,8 @@ public class CreateContractInputFromBusinessObjectWizardPageTest {
         final RelationField rootField2 = Mockito.mock(RelationField.class);
         final SimpleField childField1 = Mockito.mock(SimpleField.class);
         final SimpleField childField2 = Mockito.mock(SimpleField.class);
-        when(rootField1.isNullable()).thenReturn(true);
-        when(rootField2.isNullable()).thenReturn(false);
+        when(rootField1.isNullable()).thenReturn(false);
+        when(rootField2.isNullable()).thenReturn(true);
         when(childField1.isNullable()).thenReturn(true);
         when(childField2.isNullable()).thenReturn(false);
         final FieldToContractInputMapping rootMapping1 = new RelationFieldToContractInputMapping(rootField1);
@@ -187,8 +187,8 @@ public class CreateContractInputFromBusinessObjectWizardPageTest {
         listener.widgetSelected(mock(SelectionEvent.class));
         assertThat(checkedElements.size()).isEqualTo(3);
         assertThat(checkedElements.contains(rootMapping1)).isTrue();
-        assertThat(checkedElements.contains(rootMapping2)).isTrue();
-        assertThat(checkedElements.contains(childMapping1)).isFalse();
+        assertThat(checkedElements.contains(rootMapping2)).isFalse();
+        assertThat(checkedElements.contains(childMapping1)).isTrue();
         assertThat(checkedElements.contains(childMapping2)).isTrue();
     }
 

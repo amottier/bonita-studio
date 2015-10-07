@@ -101,6 +101,7 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
     private SelectObservableValue actionObservable;
     private final WritableValue rootNameObservable;
     private final WritableList fieldToContractInputMappingsObservable;
+    private IViewerObservableSet checkedElements;
 
     protected CreateContractInputFromBusinessObjectWizardPage(final Contract contract,
             final GenerationOptions generationOptions,
@@ -264,7 +265,7 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
                 selectedDataObservable,
                 null,
                 updateValueStrategy().withConverter(selectedDataToFieldMappings()).create());
-        final IViewerObservableSet checkedElements = ViewersObservables.observeCheckedElements(treeViewer, FieldToContractInputMapping.class);
+        checkedElements = ViewersObservables.observeCheckedElements(treeViewer, FieldToContractInputMapping.class);
         final WritableValue checkedObservableValue = new WritableValue();
         checkedObservableValue.setValue(checkedElements);
         final WritableValue mappingsObservableValue = new WritableValue();
@@ -368,17 +369,16 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
 
             protected void checkMandatoryAttributes(final IObservableSet checkedElements, final List<FieldToContractInputMapping> mappings) {
                 for (final FieldToContractInputMapping mapping : mappings) {
-                    List<FieldToContractInputMapping> mappingChildren = mapping.getChildren();
+                    final List<FieldToContractInputMapping> mappingChildren = mapping.getChildren();
                     if (!mapping.getField().isNullable() && !mapping.isGenerated()) {
                         checkedElements.add(mapping);
+                        mapping.setGenerated(true);
                         checkAllMappings(checkedElements, mappingChildren);
                         generateAllMappings(mappingChildren, true);
-                        FieldToContractInputMapping mappingParent = mapping.getParent();
-                        if (mappingParent != null && !checkedElements.contains(mappingParent)) {
-                            checkedElements.add(mappingParent);
-                        }
                     }
-                    checkMandatoryAttributes(checkedElements, mappingChildren);
+                    if (mapping.isGenerated()) {
+                        checkMandatoryAttributes(checkedElements, mappingChildren);
+                    }
                 }
 
             }
