@@ -333,10 +333,17 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
             final List<FieldToContractInputMapping> mappings, final IObservableSet checkedElements) {
         for (final FieldToContractInputMapping mapping : mappings) {
             if (!checkedElements.contains(mapping) && !mapping.isGenerated() && !mapping.getField().isNullable()) {
+                if (mapping.getParent() != null) {
+                    sb.append(mapping.getParent().getField().getName());
+                    sb.append(".");
+                }
                 sb.append(mapping.getField().getName());
                 sb.append(", ");
+            } else {
+                if (checkedElements.contains(mapping) && mapping.isGenerated()) {
+                    validateMandatoryFieldsNotSelected(sb, mapping.getChildren(), checkedElements);
+                }
             }
-            validateMandatoryFieldsNotSelected(sb, mapping.getChildren(), checkedElements);
         }
     }
 
