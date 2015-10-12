@@ -68,7 +68,6 @@ public abstract class AbstractBusinessObjectInitializer implements IPropertyInit
     public String getInitialValue() throws BusinessObjectInstantiationException {
 
         final BusinessObject businessObject = context.getField().getReference();
-        checkNotNullableFields(businessObject);
         final StringBuilder scriptBuilder = new StringBuilder();
         addCommentBeforeConstructor(scriptBuilder, businessObject);
         final String localVariableName = context.getLocalVariableName();

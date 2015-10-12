@@ -230,11 +230,14 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
         final Composite viewerComposite = new Composite(composite, SWT.NONE);
         viewerComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
         viewerComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).margins(15, 15).create());
+
+        final FieldToContractInputMappingViewerCheckStateManager manager = new FieldToContractInputMappingViewerCheckStateManager();
+        createButtonComposite(viewerComposite, manager, checkedElements);
+
         treeViewer = new CheckboxTreeViewer(viewerComposite, SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
         treeViewer.getTree().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, 200).create());
         treeViewer.getTree().setHeaderVisible(true);
         treeViewer.addFilter(hidePersistenceIdMapping());
-        final FieldToContractInputMappingViewerCheckStateManager manager = new FieldToContractInputMappingViewerCheckStateManager();
         treeViewer.addCheckStateListener(manager);
         treeViewer.setCheckStateProvider(manager);
         final ObservableListTreeContentProvider provider = new ObservableListTreeContentProvider(new FieldToContractInputMappingObservableFactory(),
@@ -275,7 +278,6 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
         dbc.bindValue(checkedObservableValue, mappingsObservableValue,
                 updateValueStrategy().withConverter(createMappingsToCheckedElementsConverter(mappingsObservableValue)).create(), updateValueStrategy()
                         .withConverter(createCheckedElementsToMappingsConverter()).create());
-        createButtonComposite(viewerComposite, manager, checkedElements);
 
     }
 
