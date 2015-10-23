@@ -66,7 +66,6 @@ public abstract class AbstractBusinessObjectInitializer implements IPropertyInit
 
     @Override
     public String getInitialValue() throws BusinessObjectInstantiationException {
-
         final BusinessObject businessObject = context.getField().getReference();
         final StringBuilder scriptBuilder = new StringBuilder();
         addCommentBeforeConstructor(scriptBuilder, businessObject);
