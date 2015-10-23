@@ -117,7 +117,6 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
         this.businessObjectStore = businessObjectStore;
         this.rootNameObservable = rootNameObservable;
         this.fieldToContractInputMappingsObservable = fieldToContractInputMappingsObservable;
-
     }
 
     public void setTitle() {
@@ -232,8 +231,6 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
         viewerComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).margins(15, 15).create());
 
         final FieldToContractInputMappingViewerCheckStateManager manager = new FieldToContractInputMappingViewerCheckStateManager();
-        createButtonComposite(viewerComposite, manager, checkedElements);
-
         treeViewer = new CheckboxTreeViewer(viewerComposite, SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
         treeViewer.getTree().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, 200).create());
         treeViewer.getTree().setHeaderVisible(true);
@@ -269,6 +266,7 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
                 null,
                 updateValueStrategy().withConverter(selectedDataToFieldMappings()).create());
         checkedElements = ViewersObservables.observeCheckedElements(treeViewer, FieldToContractInputMapping.class);
+        createButtonComposite(viewerComposite, manager, checkedElements);
         final WritableValue checkedObservableValue = new WritableValue();
         checkedObservableValue.setValue(checkedElements);
         final WritableValue mappingsObservableValue = new WritableValue();
@@ -489,7 +487,6 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
         for (final FieldToContractInputMapping mapping : mappingList) {
             checkedElements.add(mapping);
             checkAllMappings(checkedElements, mapping.getChildren());
-
         }
     }
 
