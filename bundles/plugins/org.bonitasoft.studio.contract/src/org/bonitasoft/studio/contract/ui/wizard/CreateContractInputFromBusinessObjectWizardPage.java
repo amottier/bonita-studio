@@ -102,6 +102,9 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
     private final WritableValue rootNameObservable;
     private final WritableList fieldToContractInputMappingsObservable;
     private IViewerObservableSet checkedElements;
+    private Button deselectAll;
+    private Button selectMandatories;
+    private Button selectAll;
 
     protected CreateContractInputFromBusinessObjectWizardPage(final Contract contract,
             final GenerationOptions generationOptions,
@@ -231,7 +234,7 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
         viewerComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).margins(15, 15).create());
 
         final FieldToContractInputMappingViewerCheckStateManager manager = new FieldToContractInputMappingViewerCheckStateManager();
-        createButtonComposite(viewerComposite, manager, checkedElements);
+        createButtonComposite(viewerComposite);
         treeViewer = new CheckboxTreeViewer(viewerComposite, SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
         treeViewer.getTree().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, 200).create());
         treeViewer.getTree().setHeaderVisible(true);
@@ -267,7 +270,7 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
                 null,
                 updateValueStrategy().withConverter(selectedDataToFieldMappings()).create());
         checkedElements = ViewersObservables.observeCheckedElements(treeViewer, FieldToContractInputMapping.class);
-        createButtonComposite(viewerComposite, manager, checkedElements);
+        createButtonListeners(checkedElements);
         final WritableValue checkedObservableValue = new WritableValue();
         checkedObservableValue.setValue(checkedElements);
         final WritableValue mappingsObservableValue = new WritableValue();
@@ -348,22 +351,25 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
         }
     }
 
-    protected void createButtonComposite(final Composite viewerComposite, final FieldToContractInputMappingViewerCheckStateManager manager,
-            final IObservableSet checkedElements) {
+    protected void createButtonComposite(final Composite viewerComposite) {
         final Composite buttonsComposite = new Composite(viewerComposite, SWT.NONE);
         buttonsComposite.setLayoutData(GridDataFactory.fillDefaults().grab(false, true).create());
         buttonsComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 3).create());
-        final Button selectAll = new Button(buttonsComposite, SWT.FLAT);
+        selectAll = new Button(buttonsComposite, SWT.FLAT);
         selectAll.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).hint(DEFAULT_BUTTON_WIDTH_HINT, SWT.DEFAULT).create());
         selectAll.setText(Messages.selectAll);
-        selectAll.addSelectionListener(createSelectAllListener(checkedElements));
-        final Button deselectAll = new Button(buttonsComposite, SWT.FLAT);
+        deselectAll = new Button(buttonsComposite, SWT.FLAT);
         deselectAll.setText(Messages.deselectAll);
         deselectAll.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).hint(DEFAULT_BUTTON_WIDTH_HINT, SWT.DEFAULT).create());
-        deselectAll.addSelectionListener(createDeselectAllListener(checkedElements));
-        final Button selectMandatories = new Button(buttonsComposite, SWT.FLAT);
+        selectMandatories = new Button(buttonsComposite, SWT.FLAT);
         selectMandatories.setText(Messages.selectMandatories);
         selectMandatories.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).hint(DEFAULT_BUTTON_WIDTH_HINT, SWT.DEFAULT).create());
+
+    }
+
+    protected void createButtonListeners(final IObservableSet checkedElements) {
+        selectAll.addSelectionListener(createSelectAllListener(checkedElements));
+        deselectAll.addSelectionListener(createDeselectAllListener(checkedElements));
         selectMandatories.addSelectionListener(createMandatoryAttributesSelectionListener(checkedElements));
     }
 
