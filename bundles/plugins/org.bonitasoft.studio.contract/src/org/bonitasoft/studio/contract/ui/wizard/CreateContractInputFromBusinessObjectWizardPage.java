@@ -324,7 +324,9 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
                     final StringBuilder sb = new StringBuilder();
                     validateMandatoryFieldsNotSelected(sb, mappings, checkedElements);
                     if (sb.length() > 0) {
-                        return ValidationStatus.warning(Messages.bind(Messages.mandatoryFieldsNotSelectedWarning, sb.toString()));
+                        final String message = contract.eContainer() instanceof Task ? Messages.mandatoryFieldsNotSelectedStepWarning
+                                : Messages.mandatoryFieldsNotSelectedWarning;
+                        return ValidationStatus.warning(Messages.bind(message, sb.toString()));
                     }
                 }
 
