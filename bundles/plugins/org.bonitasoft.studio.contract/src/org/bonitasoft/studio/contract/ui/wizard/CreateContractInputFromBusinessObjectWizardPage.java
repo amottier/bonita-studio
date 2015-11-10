@@ -55,8 +55,6 @@ import org.eclipse.core.databinding.observable.value.SelectObservableValue;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
-import org.eclipse.core.databinding.validation.ValidationStatus;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -275,7 +273,7 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
         checkedObservableValue.setValue(checkedElements);
         final WritableValue mappingsObservableValue = new WritableValue();
         mappingsObservableValue.setValue(fieldToContractInputMappingsObservable);
-        final MultiValidator multiValidator = createEmptySelectionMultivalidator(checkedElements);
+        final MultiValidator multiValidator = new EmptySelectionMultivalidator(checkedElements, mappings, contract.eContainer());
         dbc.addValidationStatusProvider(multiValidator);
         dbc.bindValue(checkedObservableValue, mappingsObservableValue,
                 updateValueStrategy().withConverter(createMappingsToCheckedElementsConverter(mappingsObservableValue)).create(), updateValueStrategy()
@@ -311,46 +309,6 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
                 return set;
             }
         };
-    }
-
-    protected MultiValidator createEmptySelectionMultivalidator(final IViewerObservableSet checkedElements) {
-        return new MultiValidator() {
-
-            @Override
-            protected IStatus validate() {
-                if (checkedElements.isEmpty()) {
-                    return ValidationStatus.error(Messages.atLeastOneAttributeShouldBeSelectedError);
-                } else {
-                    final StringBuilder sb = new StringBuilder();
-                    validateMandatoryFieldsNotSelected(sb, mappings, checkedElements);
-                    if (sb.length() > 0) {
-                        final String message = contract.eContainer() instanceof Task ? Messages.mandatoryFieldsNotSelectedStepWarning
-                                : Messages.mandatoryFieldsNotSelectedWarning;
-                        return ValidationStatus.warning(Messages.bind(message, sb.toString()));
-                    }
-                }
-
-                return ValidationStatus.ok();
-            }
-        };
-    }
-
-    protected void validateMandatoryFieldsNotSelected(final StringBuilder sb,
-            final List<FieldToContractInputMapping> mappings, final IObservableSet checkedElements) {
-        for (final FieldToContractInputMapping mapping : mappings) {
-            if (!checkedElements.contains(mapping) && !mapping.isGenerated() && !mapping.getField().isNullable()) {
-                if (mapping.getParent() != null) {
-                    sb.append(mapping.getParent().getField().getName());
-                    sb.append(".");
-                }
-                sb.append(mapping.getField().getName());
-                sb.append(", ");
-            } else {
-                if (checkedElements.contains(mapping) && mapping.isGenerated()) {
-                    validateMandatoryFieldsNotSelected(sb, mapping.getChildren(), checkedElements);
-                }
-            }
-        }
     }
 
     protected void createButtonComposite(final Composite viewerComposite) {
