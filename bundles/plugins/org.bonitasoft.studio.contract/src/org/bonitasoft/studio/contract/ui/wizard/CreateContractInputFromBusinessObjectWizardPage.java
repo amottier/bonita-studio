@@ -54,7 +54,7 @@ import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.SelectObservableValue;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.databinding.observable.value.WritableValue;
-import org.eclipse.core.databinding.validation.MultiValidator;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -103,6 +103,8 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
     private Button deselectAll;
     private Button selectMandatories;
     private Button selectAll;
+    private EmptySelectionMultivalidator multiValidator;
+    private EMFDataBindingContext dbc;
 
     protected CreateContractInputFromBusinessObjectWizardPage(final Contract contract,
             final GenerationOptions generationOptions,
@@ -140,7 +142,7 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
      */
     @Override
     public void createControl(final Composite parent) {
-        final EMFDataBindingContext dbc = new EMFDataBindingContext();
+        dbc = new EMFDataBindingContext();
         WizardPageSupport.create(this, dbc);
         final Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(GridLayoutFactory.fillDefaults().numColumns(1).margins(10, 10).create());
@@ -149,6 +151,23 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
         createProcessDataMappingTreeViewer(composite, dbc);
         createReminderText(dbc, composite);
         setControl(composite);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.DialogPage#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(final boolean visible) {
+        super.setVisible(visible);
+        refreshValidationMessage();
+    }
+
+    private void refreshValidationMessage() {
+        final IStatus status = multiValidator.validate();
+        if (status.isOK()) {
+            setMessage(Messages.selectFieldToGenerateDescription);
+        }
     }
 
     private void createReminderText(final EMFDataBindingContext dbc, final Composite composite) {
@@ -273,7 +292,7 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
         checkedObservableValue.setValue(checkedElements);
         final WritableValue mappingsObservableValue = new WritableValue();
         mappingsObservableValue.setValue(fieldToContractInputMappingsObservable);
-        final MultiValidator multiValidator = new EmptySelectionMultivalidator(checkedElements, mappings, contract.eContainer());
+        multiValidator = new EmptySelectionMultivalidator(checkedElements, mappings, contract.eContainer());
         dbc.addValidationStatusProvider(multiValidator);
         dbc.bindValue(checkedObservableValue, mappingsObservableValue,
                 updateValueStrategy().withConverter(createMappingsToCheckedElementsConverter(mappingsObservableValue)).create(), updateValueStrategy()
@@ -403,6 +422,9 @@ public class CreateContractInputFromBusinessObjectWizardPage extends WizardPage 
                 mappings = fieldToContractInputMappingFactory.createMappingForBusinessObjectType(toBusinessObject((BusinessObjectData) selectedData));
                 fieldToContractInputMappingsObservable.clear();
                 fieldToContractInputMappingsObservable.addAll(mappings);
+                if (multiValidator != null) {
+                    multiValidator.setMappings(mappings);
+                }
                 return mappings;
             }
         };

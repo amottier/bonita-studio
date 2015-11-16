@@ -31,7 +31,7 @@ import org.eclipse.emf.ecore.EObject;
 public class EmptySelectionMultivalidator extends MultiValidator {
 
     private final IObservableSet checkedElements;
-    private final List<FieldToContractInputMapping> mappings;
+    private List<FieldToContractInputMapping> mappings;
     private final EObject container;
 
     public EmptySelectionMultivalidator(final IObservableSet checkedElements, final List<FieldToContractInputMapping> mappings, final EObject container) {
@@ -42,12 +42,16 @@ public class EmptySelectionMultivalidator extends MultiValidator {
 
     @Override
     protected IStatus validate() {
-        if (checkedElements.isEmpty()) {
+        if (checkedElements.isEmpty() && allMappingsNotGenerated()) {
             return ValidationStatus.error(Messages.atLeastOneAttributeShouldBeSelectedError);
         } else {
             final StringBuilder sb = new StringBuilder();
+
             validateMandatoryFieldsNotSelected(sb, mappings, checkedElements);
             if (sb.length() > 0) {
+                if (sb.indexOf(",") == sb.lastIndexOf(",")) {
+                    sb.replace(sb.lastIndexOf(","), sb.lastIndexOf(",") + 1, "");
+                }
                 final String message = container instanceof Task ? Messages.mandatoryFieldsNotSelectedStepWarning
                         : Messages.mandatoryFieldsNotSelectedWarning;
                 return ValidationStatus.warning(Messages.bind(message, sb.toString()));
@@ -56,28 +60,35 @@ public class EmptySelectionMultivalidator extends MultiValidator {
         return ValidationStatus.ok();
     }
 
-    protected void validateMandatoryFieldsNotSelected(final StringBuilder sb,
+    private boolean allMappingsNotGenerated() {
+        for (final FieldToContractInputMapping mapping : mappings) {
+            if (mapping.isGenerated()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void validateMandatoryFieldsNotSelected(final StringBuilder sb,
             final List<FieldToContractInputMapping> mappings, final IObservableSet checkedElements) {
-        int numberOfElements = 0;
         for (final FieldToContractInputMapping mapping : mappings) {
             if (!checkedElements.contains(mapping) && !mapping.isGenerated() && !mapping.getField().isNullable()) {
-                numberOfElements++;
                 if (mapping.getParent() != null) {
                     sb.append(mapping.getParent().getField().getName());
                     sb.append(".");
                 }
                 sb.append(mapping.getField().getName());
                 sb.append(", ");
-
             } else {
                 if (checkedElements.contains(mapping) && mapping.isGenerated()) {
                     validateMandatoryFieldsNotSelected(sb, mapping.getChildren(), checkedElements);
                 }
             }
         }
-        if (numberOfElements == 1) {
-            sb.replace(sb.lastIndexOf(","), sb.lastIndexOf(",") + 1, "");
-        }
+    }
+
+    public void setMappings(final List<FieldToContractInputMapping> mappings) {
+        this.mappings = mappings;
     }
 
 }
