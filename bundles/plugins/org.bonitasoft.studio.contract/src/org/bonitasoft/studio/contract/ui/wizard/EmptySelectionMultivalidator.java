@@ -61,9 +61,11 @@ public class EmptySelectionMultivalidator extends MultiValidator {
     }
 
     private boolean allMappingsNotGenerated() {
-        for (final FieldToContractInputMapping mapping : mappings) {
-            if (mapping.isGenerated()) {
-                return false;
+        if (mappings != null) {
+            for (final FieldToContractInputMapping mapping : mappings) {
+                if (mapping.isGenerated()) {
+                    return false;
+                }
             }
         }
         return true;
