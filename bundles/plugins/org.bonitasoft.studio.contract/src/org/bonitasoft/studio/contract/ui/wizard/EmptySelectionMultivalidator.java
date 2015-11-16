@@ -58,19 +58,25 @@ public class EmptySelectionMultivalidator extends MultiValidator {
 
     protected void validateMandatoryFieldsNotSelected(final StringBuilder sb,
             final List<FieldToContractInputMapping> mappings, final IObservableSet checkedElements) {
+        int numberOfElements = 0;
         for (final FieldToContractInputMapping mapping : mappings) {
             if (!checkedElements.contains(mapping) && !mapping.isGenerated() && !mapping.getField().isNullable()) {
+                numberOfElements++;
                 if (mapping.getParent() != null) {
                     sb.append(mapping.getParent().getField().getName());
                     sb.append(".");
                 }
                 sb.append(mapping.getField().getName());
                 sb.append(", ");
+
             } else {
                 if (checkedElements.contains(mapping) && mapping.isGenerated()) {
                     validateMandatoryFieldsNotSelected(sb, mapping.getChildren(), checkedElements);
                 }
             }
+        }
+        if (numberOfElements == 1) {
+            sb.replace(sb.lastIndexOf(","), sb.lastIndexOf(",") + 1, "");
         }
     }
 
